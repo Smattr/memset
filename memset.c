@@ -133,7 +133,7 @@ void* wordwise_memset(void* s, int c, size_t sz) {
  *
  * After the epilogue:  +-+-+-+-+-+-+-+ Now we're done.
  *                      |2|3|4|5|6|7|8|  pp = 9, p = 8
- *                      +-+-+-+-+-+-+-+  sz = -1, tail = -1
+ *                      +-+-+-+-+-+-+-+  sz = -1, tail = 0
  *                      |0|0|0|0|0|0|0|
  *                      +-+-+-+-+-+-+-+
  */
