@@ -212,6 +212,45 @@ void* wordwise_unaligned_memset(void* s, int c, size_t sz) {
     return s;
 }
 
+/* Finally, just for fun, let's look at memset using Duff's Device
+ * (http://www.lysator.liu.se/c/duffs-device.html). The original Duff's Device
+ * was not intended to target memset, but was aimed at solving the problem of
+ * copying data from an array into a memory mapped hardware register. As a
+ * result, it's not particularly suited to memset. Of course there's a big
+ * "but" with this. As with all the algorithms in this file, the relative
+ * performance is highly architecture- and compiler-dependent. If you want to
+ * know the fastest algorithm for a given scenario you really have no choice
+ * but to look at the generated assembly code.
+ */
+void* duffs_device_memset(void* s, int c, size_t sz) {
+    byte* p = (byte*)s;
+    byte x = c & 0xff;
+    unsigned int leftover = sz & 0x7;
+
+    /* Catch the pathological case of 0. */
+    if (!sz)
+        return s;
+
+    /* To understand what's going on here, take a look at the original
+     * bytewise_memset and consider unrolling the loop. For this situation
+     * we'll unroll the loop 8 times (assuming a 32-bit architecture). Choosing
+     * the level to which to unroll the loop can be a fine art...
+     */
+    sz = (sz + 7) >> 3;
+    switch (leftover) {
+        case 0: do { *p++ = x;
+        case 7:      *p++ = x;
+        case 6:      *p++ = x;
+        case 5:      *p++ = x;
+        case 4:      *p++ = x;
+        case 3:      *p++ = x;
+        case 2:      *p++ = x;
+        case 1:      *p++ = x;
+                } while (--sz > 0);
+    }
+    return s;
+}
+
 /* Lines below here are instrumentation for testing your implementation. */
 
 #define CHECK(f, unaligned) \
@@ -267,6 +306,8 @@ int main(int argc, char** argv) {
     CHECK(wordwise_32_unaligned_memset, 1);
     CHECK(wordwise_unaligned_memset, 0);
     CHECK(wordwise_unaligned_memset, 1);
+    CHECK(duffs_device_memset, 0);
+    CHECK(duffs_device_memset, 1);
 
     return 0;
 }
