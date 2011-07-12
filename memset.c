@@ -129,11 +129,11 @@ void* wordwise_memset(void* s, int c, size_t sz) {
  *                      |2|3|4|5|6|7|8| regions, but there's still one byte
  *                      +-+-+-+-+-+-+-+ remaining.
  *                      |0|0|0|0|0|0|?|  pp = 8, p = 8
- *                      +-+-+-+-+-+-+-+  sz = -1, tail = 1
+ *                      +-+-+-+-+-+-+-+  sz = 0, tail = 1
  *
  * After the epilogue:  +-+-+-+-+-+-+-+ Now we're done.
  *                      |2|3|4|5|6|7|8|  pp = 9, p = 8
- *                      +-+-+-+-+-+-+-+  sz = -1, tail = 0
+ *                      +-+-+-+-+-+-+-+  sz = 0, tail = 0
  *                      |0|0|0|0|0|0|0|
  *                      +-+-+-+-+-+-+-+
  */
